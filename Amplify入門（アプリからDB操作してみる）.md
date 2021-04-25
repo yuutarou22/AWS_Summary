@@ -15,25 +15,188 @@
 
 ## Amplifyのチュートリアルで学習を進める
 
+### 以下のコマンドでインストール
+
+`npm install -g @aws-amplify/cli`
+
+こんな感じで出力されればOK
+
+`added 1213 packages, and audited 1231 packages in 43s`
+
+### 以下のコマンドでAmplifyCLI（コマンドラインインタフェース）をセットアップする
+
+`amplify configure`
+
+#### ログイン
+コンソールにログインを求められるので、ログインする。そしてコマンドラインでEnterを押す。
+
+#### リージョン選択
+恐らく、Amplifyをセットアップするリージョンを選択するんだと思う。
+
+```
+Specify the AWS Region
+? region:
+  ap-south-1
+  ca-central-1
+  us-east-1
+❯ us-east-2
+  us-west-2
+  eu-west-1
+  eu-west-2
+(Move up and down to reveal more choices)
+```
+
+[ap-northeast-1（東京である）](https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions)を選択する。
+
+#### IAMの作成
+`Specify the username of the new IAM user:`
+
+どうやらAmplify用の新しいIAMユーザの名前を入れるみたい。
+
+「aws-amplify-only」でやってみた。するとマネジメントコンソールを開き、IAMの設定画面に遷移する。
+
+1. 「プログラムによるアクセス」にチェックを入れた状態で、次へ。
+2. 「AdministratorAccess」を選択して次へ
+3. 最後に「ユーザーの作成」を押下する
+
+アクセスキーIDとシークレットキーを受け取る（メモっておくこと）
+
+→コマンドラインの方でEnter押すの忘れてた。
+
+```
+Press Enter to continue
+
+Enter the access key of the newly created user:
+? accessKeyId:  ********************
+? secretAccessKey:  ****************************************
+This would update/create the AWS Profile in your local machine
+? Profile Name:  aws-amplify-only
+
+Successfully set up the new user.
+```
+
+### アプリのセットアップ
+
+今回テスト用プロジェクトを作成した。
+
+- ProjectレベルのGradle
+
+`classpath 'com.amplifyframework:amplify-tools-gradle-plugin:1.0.2'`
+`(最後の行に)apply plugin: 'com.amplifyframework.amplifytools'`
+
+- ModuleレベルのGradle
+
+```
+implementation 'com.amplifyframework:aws-api:1.17.1'
+implementation 'com.amplifyframework:aws-datastore:1.17.1'
+```
+
+Syncを実行する
+
+### プロジェクトのセットアップ
+
+プロジェクトのルートまで移動し、以下を実行する
+
+`amplify init`
+
+以降、以下のようになる。（日本語訳はコメントにて記載）
+
+```
+# このコマンドは、アプリディレクトリのルートから実行することをお勧めします
+Note: It is recommended to run this command from the root of your app directory
+# プロジェクトの名前を入力します
+? Enter a name for the project <APP_NAME>
+# 次の構成が適用されます
+The following configuration will be applied:
+
+Project information
+| Name: <APP_NAME>
+| Environment: dev
+| Default editor: Visual Studio Code
+| App type: android
+| Res directory: app/src/main/res
+
+# 上記の構成でプロジェクトを初期化しますか？
+? Initialize the project with the above configuration? Yes
+
+# デフォルトのプロバイダーawscloudformationを使用する
+Using default provider  awscloudformation
+
+# 使用する認証方法を選択します。（今回はアクセスキーを選択
+? Select the authentication method you want to use: AWS access keys
+? accessKeyId:  ****
+? secretAccessKey:  ****
+? region:  ap-northeast-1
+
+# バックエンド環境開発者をAWSAmplifyコンソールアプリに追加する
+Adding backend environment dev to AWS Amplify Console app: <random>
+⠦ Initializing project in the cloud...
+
+# 中略
+
+# 「amplifyaddapi」を試してバックエンドAPIを作成してから、「amplifypublish」を試してすべてをデプロイしてください
+Pro tip:
+Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything
+```
+
+マネジメントコンソールからAmplifyを開き、アプリケーション一覧を開くと追加されている！やったー🙌
+
+### モデルを作成する
+DBのスキーマを設定する。
+
+チュートリアル通りに行こう。
+
+- ファイルビューを「Project」に切り替える
+- amplifyディレクトリがプロジェクト内に作成されていることを確認する
+  - `amplify/backend/api/amplifyDatasource/schema.graphql` を選択する
+  - チュートリアル通りに書き換えてみよう。
+
+```graphql
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+}
+
+type Todo @model {
+  id: ID! // IDは自動生成される識別子。!はNonNull（非オプショナル型）
+  name: String! // !はNonNull（非オプショナル型）である
+  priority: Priority // 列挙型である
+  description: String // Nullable（オプショナル型）である
+}
+```
+
+書き終わったら、BuildConfiguration（AndroidStudioのビルドするところ）から、 **「modelgen」** を選択する。
+
+Runを実行する（control + R)
+
+```
+The following types do not have '@auth' enabled. Consider using @auth with @model
+	 - Todo
+Learn more about @auth here: https://docs.amplify.aws/cli/graphql-transformer/auth
 
 
-### 参考
-- [Amplifyチュートリアル](https://docs.amplify.aws/start/getting-started/installation/q/integration/android)
+GraphQL schema compiled successfully.
+```
+AndroidStudioのRunエリアに上記のように表示されていればOK!
 
+### 
 
-## npmとは
+## (補足)npmとは
 Node Package Managerである。Node.jsのパッケージ管理ツールである。
 
 パッケージとは、Javascriptのライブラリやフレームワークのことを指す。
 
 npmを使えば、各種ライブラリの依存関係を管理・解消してくれ、パッケージの更新・インストール/アンインストールを行うことが可能である。
 
-### ハイフンGとは
+#### ハイフンGとは
 グローバルを指している。
 
-### パッケージ管理
+#### パッケージ管理
 npm list
 
 
 ### 参考
+
+- [Amplifyチュートリアル](https://docs.amplify.aws/start/getting-started/installation/q/integration/android)
 - [npm の基本的な使い方](https://www.webdesignleaves.com/pr/jquery/npm_basic.html)
