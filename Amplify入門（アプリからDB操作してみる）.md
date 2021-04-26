@@ -228,6 +228,21 @@ Todoクラスなどが生成される。
             })
 ```
 
+## AmplifyのGradleタスク
+
+Amplifyを導入すると、Gradleタスクが追加される。
+
+![スクリーンショット 2021-04-27 7 41 39](https://user-images.githubusercontent.com/23667931/116159972-25d44500-a72c-11eb-94d4-03d28beff547.png)
+
+タスク自体はOther配下に作成されるみたい。
+
+![スクリーンショット 2021-04-27 7 42 01](https://user-images.githubusercontent.com/23667931/116160007-34baf780-a72c-11eb-8f78-011ff7f22fd2.png)
+
+- modelgen
+  - ローカル上でモデルクラスを作成する
+- amplifyPush
+  - Amplifyのクラウド上にプッシュする
+
 ## (補足)npmとは
 Node Package Managerである。Node.jsのパッケージ管理ツールである。
 
