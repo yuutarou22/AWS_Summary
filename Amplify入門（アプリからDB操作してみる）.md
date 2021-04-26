@@ -180,7 +180,53 @@ GraphQL schema compiled successfully.
 ```
 AndroidStudioのRunエリアに上記のように表示されていればOK!
 
-### 
+Todoクラスなどが生成される。
+
+### 実際にちょこっと使ってみる。
+
+実装例は以下の通り。コメントで補足している。めっちゃゴリ押し。
+
+```kotlin
+        try {
+            Amplify.addPlugin(AWSDataStorePlugin())
+            Amplify.configure(applicationContext)
+            Log.d("Tutorial", "Initialized Amplify")
+        } catch (e: AmplifyException) {
+            Log.d("Tutorial", "Could not Initialized Amplify", e)
+        }
+
+//        var item : Todo = Todo.builder().name("Build Android application")
+//            .description("using Amplify")
+//            .build()
+
+        var item : Todo = Todo.builder().name("Finish quarterly texas")
+            .priority(Priority.HIGH)
+            .description("texas are due for the quarter next week")
+            .build()
+
+        // ローカルデータ（DataStore）上にどんどん保存していく。実行するたびに保存データが増えていく。
+        // SharedPreferencesみたい。
+        Amplify.DataStore.save(item,
+            {Log.d("Tutorial", "Saved item: ${item.name}")},
+            {Log.d("Tutorial", "Could not item", it)})
+
+        // 全て呼び出している。条件をつけてSELECTすることも可能
+        Amplify.DataStore.query(Todo::class.java,
+            {
+                todos ->
+                while (todos.hasNext()) {
+                    val todo: Todo = todos.next()
+                    Log.d("Tutorial", "========TODO=======")
+                    Log.d("Tutorial", "Name : ${todo.name}")
+                    Log.d("Tutorial", "Priority : ${todo.priority}")
+                    Log.d("Tutorial", "Description : ${todo.description}")
+                    Log.d("Tutorial", "")
+                }
+            },
+            {
+                Log.d("Tutorial", "Could not query DataStore", it)
+            })
+```
 
 ## (補足)npmとは
 Node Package Managerである。Node.jsのパッケージ管理ツールである。
