@@ -228,7 +228,7 @@ Todoクラスなどが生成される。
             })
 ```
 
-## AmplifyのGradleタスク
+### AmplifyのGradleタスク
 
 Amplifyを導入すると、Gradleタスクが追加される。
 
@@ -243,7 +243,92 @@ Amplifyを導入すると、Gradleタスクが追加される。
 - amplifyPush
   - Amplifyのクラウド上にプッシュする
 
-## (補足)npmとは
+以下のコマンドを実行する！
+
+`amplify console api`
+
+```
+# 以下のサービスのいずれかから選択してください。
+? Please select from one of the below mentioned services: (Use arrow keys)
+```
+
+「GraphQL」を選択すると、AppSyncマネジメントコンソールが開く。
+
+<img width="577" alt="スクリーンショット 2021-04-27 20 15 05" src="https://user-images.githubusercontent.com/23667931/116240201-87cd9280-a79e-11eb-952c-94a8ae2d153c.png">
+
+**クエリ** ウィンドウで以下のクエリを貼り付ける。（GraphQLは、OSSのクエリー言語である。以下は、取得用のクエリーである。）
+
+```
+query GetTodos {
+     listTodos {
+         items {
+             id
+             name
+             priority
+             description
+         }
+     }
+ }
+```
+
+<img width="1015" alt="スクリーンショット 2021-04-27 20 16 53" src="https://user-images.githubusercontent.com/23667931/116240259-961bae80-a79e-11eb-85aa-d1ecc4430776.png">
+
+
+すると、取得結果が右側に表示される。
+
+<img width="1366" alt="スクリーンショット 2021-04-27 20 17 08" src="https://user-images.githubusercontent.com/23667931/116240291-9d42bc80-a79e-11eb-98a7-344ba3630505.png">
+
+
+## 【補足】GraphQLとは
+OSSのクエリー言語である。
+
+処理形態は以下の3つのみ。
+
+- 取得/Query
+- 変更/Mutation
+- 購読/Subscription
+
+### GraphQLのメリット
+
+- 型指定されたスキーマ
+- クライアントからのレスポンス形式の指定
+- サブスクリプションを使用したリアルタイム処理
+
+#### 型指定されたスキーマ
+APIを定義したスキーマをベースに、APIドキュメントを自動生成する。
+
+```
+スキーマ例
+
+type Query {
+  getTodos:[Todo]
+}
+
+type Todo {
+  id: ID!
+  name: String
+  description: String
+  priority: Int
+  duedate: String
+}
+```
+
+こんな感じでスキーマを定義しておけば、自動でドキュメントを生成してくれる。
+
+#### クライアントからのレスポンス形式の指定
+```
+query {
+  getTodos {
+    id
+    name
+    priority
+  }
+}
+```
+
+こんな感じでクエリー（取得）を記述した場合、3つの値だけレスポンスとして返ってくる
+
+## 【補足】npmとは
 Node Package Managerである。Node.jsのパッケージ管理ツールである。
 
 パッケージとは、Javascriptのライブラリやフレームワークのことを指す。
